@@ -1,5 +1,4 @@
 return {
-  -- 1. LE LOOK (Thème Catppuccin)
   {
     "catppuccin/nvim",
     name = "catppuccin",
@@ -7,8 +6,8 @@ return {
     priority = 1000,
     config = function()
       require("catppuccin").setup({
-        flavour = "mocha", -- latte, frappe, macchiato, mocha
-        transparent_background = true, -- Stylé si ton terminal Ghostty est transparent
+        flavour = "mocha",
+        transparent_background = true,
         integrations = {
           neotree = true,
           cmp = true,
@@ -19,33 +18,29 @@ return {
       vim.cmd.colorscheme "catppuccin"
     end,
   },
-
-  -- 2. AFFICHAGE D'IMAGES (Nécessite Magick sur ton Mac)
   {
-  "3rd/image.nvim",
-  lazy = false,
-  build = false, -- On désactive le build auto qui plante chez toi
-  opts = {
-    backend = "kitty", -- Ghostty utilise le protocole kitty, c'est parfait
-    integrations = {
-      markdown = {
-        enabled = true,
-        clear_in_insert_mode = false,
-        download_remote_images = true,
-        only_render_image_at_cursor = false,
-        filetypes = { "markdown", "vimwiki", "quarto" },
+    "3rd/image.nvim",
+    lazy = false,
+    build = false,
+    opts = {
+      backend = "kitty",
+      integrations = {
+        markdown = {
+          enabled = true,
+          clear_in_insert_mode = false,
+          download_remote_images = true,
+          only_render_image_at_cursor = false,
+          filetypes = { "markdown", "vimwiki", "quarto" },
+        },
       },
+      max_width = nil,
+      max_height = nil,
+      max_width_window_percentage = nil,
+      max_height_window_percentage = 50,
+      window_overlap_clear_enabled = false,
+      window_overlap_clear_ft_ignore = { "cmp_menu", "cmp_docs", "" },
     },
-    max_width = nil,
-    max_height = nil,
-    max_width_window_percentage = nil,
-    max_height_window_percentage = 50,
-    window_overlap_clear_enabled = false,
-    window_overlap_clear_ft_ignore = { "cmp_menu", "cmp_docs", "" },
   },
-},
-
-  -- 3. NAVIGATION FULLSTACK (Telescope)
   {
     "nvim-telescope/telescope.nvim",
     lazy = false,
@@ -56,8 +51,6 @@ return {
     },
     config = true,
   },
-
-  -- 4. LA BARRE D'ÉTAT (Lualine)
   {
     "nvim-lualine/lualine.nvim",
     lazy = false,
@@ -68,8 +61,6 @@ return {
       }
     end,
   },
-
-  -- 5. LSP & AUTOCOMPLETION (Optimisé TS/Go/Py)
   {
     "williamboman/mason-lspconfig.nvim",
     lazy = false,
@@ -88,8 +79,6 @@ return {
       })
     end,
   },
-
-  -- 6. MOTEUR DE COMPLETION
   {
     "hrsh7th/nvim-cmp",
     lazy = false,
@@ -98,7 +87,7 @@ return {
       "hrsh7th/cmp-buffer",
       "L3MON4D3/LuaSnip",
       "saadparwaiz1/cmp_luasnip",
-      "onsails/lspkind.nvim", -- Ajoute des icônes stylées au menu
+      "onsails/lspkind.nvim",
     },
     config = function()
       local cmp = require("cmp")
@@ -121,29 +110,23 @@ return {
       })
     end,
   },
-
-  -- 7. TES AUTRES PLUGINS (Nettoyés et forcés)
   { "vyfor/cord.nvim", lazy = false, config = true },
   { "nvim-neo-tree/neo-tree.nvim", lazy = false, branch = "v3.x", dependencies = { "nvim-lua/plenary.nvim", "MunifTanjim/nui.nvim" } },
   { "OXY2DEV/markview.nvim", lazy = false },
   { "folke/noice.nvim", lazy = false, opts = {}, dependencies = { "MunifTanjim/nui.nvim", "rcarriga/nvim-notify" } },
-  -- GESTION GIT (Commit, Push, Pull)
   {
     "NeogitOrg/neogit",
     lazy = false,
     dependencies = {
       "nvim-lua/plenary.nvim",
-      "sindrets/diffview.nvim", -- Indispensable pour voir les diffs
+      "sindrets/diffview.nvim",
       "nvim-telescope/telescope.nvim",
     },
     config = function()
       require("neogit").setup {}
-      -- Raccourci pour ouvrir l'interface Git
       vim.keymap.set("n", "<leader>gs", "<cmd>Neogit<cr>", { desc = "Neogit Status" })
     end,
   },
-
-  -- SIGNES DANS LA MARGE (Voir les modifs en direct)
   {
     "lewis6991/gitsigns.nvim",
     lazy = false,
@@ -151,8 +134,6 @@ return {
       require('gitsigns').setup()
     end
   },
-
-  -- GESTION DES BASES DE DONNÉES (SQL, NoSQL)
   {
     "tpope/vim-dadbod",
     lazy = false,
@@ -161,12 +142,9 @@ return {
       "kristijanhusak/vim-dadbod-completion",
     },
     config = function()
-      -- Raccourci pour ouvrir le panneau DB
       vim.keymap.set("n", "<leader>db", "<cmd>DBUIToggle<cr>", { desc = "Toggle DB UI" })
     end,
   },
-
-  -- GESTION GITHUB (Pull Requests & Issues)
   {
     "pwntester/octo.nvim",
     lazy = false,
