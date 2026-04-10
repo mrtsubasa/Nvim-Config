@@ -1,242 +1,182 @@
 return {
+  -- 1. LE LOOK (Thème Catppuccin)
   {
-    "stevearc/conform.nvim",
-    -- event = 'BufWritePre', -- uncomment for format on save
-    opts = require "configs.conform",
-  },
-
-  -- These are some examples, uncomment them if you want to see them work!
-  {
-    "neovim/nvim-lspconfig",
+    "catppuccin/nvim",
+    name = "catppuccin",
+    lazy = false,
+    priority = 1000,
     config = function()
-      require "configs.lspconfig"
+      require("catppuccin").setup({
+        flavour = "mocha", -- latte, frappe, macchiato, mocha
+        transparent_background = true, -- Stylé si ton terminal Ghostty est transparent
+        integrations = {
+          neotree = true,
+          cmp = true,
+          treesitter = true,
+          noice = true,
+        }
+      })
+      vim.cmd.colorscheme "catppuccin"
     end,
   },
+
+  -- 2. AFFICHAGE D'IMAGES (Nécessite Magick sur ton Mac)
   {
-  'jrop/tuis.nvim',
-  config = function()
-    -- Optional: set up keymaps
-    vim.keymap.set('n', '<leader>m', function()
-      require('tuis').choose()
-    end, { desc = 'Choose Morph UI' })
-  end
-},
--- lazy.nvim
-{
-  "folke/noice.nvim",
-  event = "VeryLazy",
+  "3rd/image.nvim",
+  lazy = false,
+  build = false, -- On désactive le build auto qui plante chez toi
   opts = {
-    -- add any options here
-  },
-  dependencies = {
-    -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
-    "MunifTanjim/nui.nvim",
-    -- OPTIONAL:
-    --   `nvim-notify` is only needed, if you want to use the notification view.
-    --   If not available, we use `mini` as the fallback
-    "rcarriga/nvim-notify",
-    }
-},
-{
-  'vyfor/cord.nvim',
-  lazy = false, -- Force le chargement au démarrage
-  config = function()
-    require("cord").setup()
-  end,
-},
-{
-    "williamboman/mason.nvim"
-},
-{
-    "nvim-neo-tree/neo-tree.nvim",
-    branch = "v3.x",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "MunifTanjim/nui.nvim",
-      "nvim-tree/nvim-web-devicons", -- optional, but recommended
-    },
-    lazy = false, -- neo-tree will lazily load itself
-},
-{
-  'stevearc/oil.nvim',
-  opts = {},
-  -- Optional dependencies
-  dependencies = { "nvim-tree/nvim-web-devicons" },
-},
-{
-  "HakonHarnes/img-clip.nvim",
-  event = "VeryLazy",
-  opts = {
-    -- add options here
-    -- or leave it empty to use the default settings
-  },
-  keys = {
-    -- suggested keymap
-    { "<leader>p", "<cmd>PasteImage<cr>", desc = "Paste image from system clipboard" },
-  },
-},
-{
-    'MeanderingProgrammer/render-markdown.nvim',
-    dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-mini/mini.nvim' },            -- if you use the mini.nvim suite
-    -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-mini/mini.icons' },        -- if you use standalone mini plugins
-    -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' }, -- if you prefer nvim-web-devicons
-    ---@module 'render-markdown'
-    ---@type render.md.UserConfig
-    opts = {},
-},
-{
-  "folke/flash.nvim",
-  event = "VeryLazy",
-  ---@type Flash.Config
-  opts = {},
-  keys = {
-    { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
-    { "S", mode = { "n", "x", "o" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
-    { "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
-    { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
-    { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
-  },
-},
-{
-    "folke/lazydev.nvim",
-    ft = "lua", -- only load on lua files
-    opts = {
-      library = {
-        -- See the configuration section for more details
-        -- Load luvit types when the `vim.uv` word is found
-        { path = "${3rd}/luv/library", words = { "vim%.uv" } },
+    backend = "kitty", -- Ghostty utilise le protocole kitty, c'est parfait
+    integrations = {
+      markdown = {
+        enabled = true,
+        clear_in_insert_mode = false,
+        download_remote_images = true,
+        only_render_image_at_cursor = false,
+        filetypes = { "markdown", "vimwiki", "quarto" },
       },
     },
+    max_width = nil,
+    max_height = nil,
+    max_width_window_percentage = nil,
+    max_height_window_percentage = 50,
+    window_overlap_clear_enabled = false,
+    window_overlap_clear_ft_ignore = { "cmp_menu", "cmp_docs", "" },
   },
-  { -- optional cmp completion source for require statements and module annotations
-    "hrsh7th/nvim-cmp",
-    opts = function(_, opts)
-      opts.sources = opts.sources or {}
-      table.insert(opts.sources, {
-        name = "lazydev",
-        group_index = 0, -- set group index to 0 to skip loading LuaLS completions
+},
+
+  -- 3. NAVIGATION FULLSTACK (Telescope)
+  {
+    "nvim-telescope/telescope.nvim",
+    lazy = false,
+    dependencies = { "nvim-lua/plenary.nvim" },
+    keys = {
+      { "<leader>ff", "<cmd>Telescope find_files<cr>", desc = "Trouver Fichier" },
+      { "<leader>fg", "<cmd>Telescope live_grep<cr>", desc = "Chercher texte (grep)" },
+    },
+    config = true,
+  },
+
+  -- 4. LA BARRE D'ÉTAT (Lualine)
+  {
+    "nvim-lualine/lualine.nvim",
+    lazy = false,
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    config = function()
+      require('lualine').setup {
+        options = { theme = 'catppuccin' }
+      }
+    end,
+  },
+
+  -- 5. LSP & AUTOCOMPLETION (Optimisé TS/Go/Py)
+  {
+    "williamboman/mason-lspconfig.nvim",
+    lazy = false,
+    dependencies = { "neovim/nvim-lspconfig", "williamboman/mason.nvim" },
+    config = function()
+      local capabilities = require('cmp_nvim_lsp').default_capabilities()
+      local lspconfig = require('lspconfig')
+      require("mason").setup()
+      require("mason-lspconfig").setup({
+        ensure_installed = { "ts_ls", "gopls", "pyright", "lua_ls", "tailwindcss", "eslint" },
+      })
+      require("mason-lspconfig").setup_handlers({
+        function(server_name)
+          lspconfig[server_name].setup({ capabilities = capabilities })
+        end,
       })
     end,
   },
-  { -- optional blink completion source for require statements and module annotations
-    "saghen/blink.cmp",
-    opts = {
-      sources = {
-        -- add lazydev to your completion providers
-        default = { "lazydev", "lsp", "path", "snippets", "buffer" },
-        providers = {
-          lazydev = {
-            name = "LazyDev",
-            module = "lazydev.integrations.blink",
-            -- make lazydev completions top priority (see `:h blink.cmp`)
-            score_offset = 100,
-          },
-        },
-      },
-    },
-  },
-{ 
-    "danymat/neogen", 
-    config = true,
-    -- Uncomment next line if you want to follow only stable versions
-    -- version = "*" 
-},
-{
-    "OXY2DEV/markview.nvim",
+
+  -- 6. MOTEUR DE COMPLETION
+  {
+    "hrsh7th/nvim-cmp",
     lazy = false,
-},
-{
-  'nvimdev/dashboard-nvim',
-  event = 'VimEnter',
-  config = function()
-    require('dashboard').setup {
-      -- config
-    }
-  end,
-  dependencies = { {'nvim-tree/nvim-web-devicons'}}
-},
-{
-  "pwntester/octo.nvim",
-  cmd = "Octo",
-  opts = {
-    -- or "fzf-lua" or "snacks" or "default"
-    picker = "telescope",
-    -- bare Octo command opens picker of commands
-    enable_builtin = true,
-  },
-  keys = {
-    {
-      "<leader>oi",
-      "<CMD>Octo issue list<CR>",
-      desc = "List GitHub Issues",
-    },
-    {
-      "<leader>op",
-      "<CMD>Octo pr list<CR>",
-      desc = "List GitHub PullRequests",
-    },
-    {
-      "<leader>od",
-      "<CMD>Octo discussion list<CR>",
-      desc = "List GitHub Discussions",
-    },
-    {
-      "<leader>on",
-      "<CMD>Octo notification list<CR>",
-      desc = "List GitHub Notifications",
-    },
-    {
-      "<leader>os",
-      function()
-        require("octo.utils").create_base_search_command { include_current_repo = true }
-      end,
-      desc = "Search GitHub",
-    },
-  },
-  dependencies = {
-    "nvim-lua/plenary.nvim",
-    "nvim-telescope/telescope.nvim",
-    -- OR "ibhagwan/fzf-lua",
-    -- OR "folke/snacks.nvim",
-    "nvim-tree/nvim-web-devicons",
-  },
-},
-{
-    "kawre/leetcode.nvim",
-    build = ":TSUpdate html", -- if you have `nvim-treesitter` installed
     dependencies = {
-        -- include a picker of your choice, see picker section for more details
-        "nvim-lua/plenary.nvim",
-        "MunifTanjim/nui.nvim",
+      "hrsh7th/cmp-nvim-lsp",
+      "hrsh7th/cmp-buffer",
+      "L3MON4D3/LuaSnip",
+      "saadparwaiz1/cmp_luasnip",
+      "onsails/lspkind.nvim", -- Ajoute des icônes stylées au menu
     },
-    opts = {
-        -- configuration goes here
+    config = function()
+      local cmp = require("cmp")
+      local lspkind = require("lspkind")
+      cmp.setup({
+        formatting = {
+          format = lspkind.cmp_format({ mode = 'symbol_text', maxwidth = 50 })
+        },
+        snippet = { expand = function(args) require('luasnip').lsp_expand(args.body) end },
+        mapping = cmp.mapping.preset.insert({
+          ['<C-Space>'] = cmp.mapping.complete(),
+          ['<CR>'] = cmp.mapping.confirm({ select = true }),
+          ['<Tab>'] = cmp.mapping.select_next_item(),
+        }),
+        sources = {
+          { name = 'nvim_lsp' },
+          { name = 'luasnip' },
+          { name = 'buffer' },
+        }
+      })
+    end,
+  },
+
+  -- 7. TES AUTRES PLUGINS (Nettoyés et forcés)
+  { "vyfor/cord.nvim", lazy = false, config = true },
+  { "nvim-neo-tree/neo-tree.nvim", lazy = false, branch = "v3.x", dependencies = { "nvim-lua/plenary.nvim", "MunifTanjim/nui.nvim" } },
+  { "OXY2DEV/markview.nvim", lazy = false },
+  { "folke/noice.nvim", lazy = false, opts = {}, dependencies = { "MunifTanjim/nui.nvim", "rcarriga/nvim-notify" } },
+  -- GESTION GIT (Commit, Push, Pull)
+  {
+    "NeogitOrg/neogit",
+    lazy = false,
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "sindrets/diffview.nvim", -- Indispensable pour voir les diffs
+      "nvim-telescope/telescope.nvim",
     },
-},
-{
-  'mrcjkb/rustaceanvim',
-  -- To avoid being surprised by breaking changes,
-  -- I recommend you set a version range
-  version = '^9',
-  -- This plugin implements proper lazy-loading (see :h lua-plugin-lazy).
-  -- No need for lazy.nvim to lazy-load it.
-  lazy = false,
-},
-{
-    "nvim-treesitter/nvim-treesitter",
-    build = ":TSUpdate",
-},
+    config = function()
+      require("neogit").setup {}
+      -- Raccourci pour ouvrir l'interface Git
+      vim.keymap.set("n", "<leader>gs", "<cmd>Neogit<cr>", { desc = "Neogit Status" })
+    end,
+  },
 
-  -- test new blink
-  -- { import = "nvchad.blink.lazyspec" },
+  -- SIGNES DANS LA MARGE (Voir les modifs en direct)
+  {
+    "lewis6991/gitsigns.nvim",
+    lazy = false,
+    config = function()
+      require('gitsigns').setup()
+    end
+  },
 
-  -- {
-  -- 	"nvim-treesitter/nvim-treesitter",
-  -- 	opts = {
-  -- 		ensure_installed = {
-  -- 			"vim", "lua", "vimdoc",
-  --      "html", "css"
-  -- 		},
-  -- 	},
-  -- },
+  -- GESTION DES BASES DE DONNÉES (SQL, NoSQL)
+  {
+    "tpope/vim-dadbod",
+    lazy = false,
+    dependencies = {
+      "kristijanhusak/vim-dadbod-ui",
+      "kristijanhusak/vim-dadbod-completion",
+    },
+    config = function()
+      -- Raccourci pour ouvrir le panneau DB
+      vim.keymap.set("n", "<leader>db", "<cmd>DBUIToggle<cr>", { desc = "Toggle DB UI" })
+    end,
+  },
+
+  -- GESTION GITHUB (Pull Requests & Issues)
+  {
+    "pwntester/octo.nvim",
+    lazy = false,
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-telescope/telescope.nvim",
+      "nvim-tree/nvim-web-devicons",
+    },
+    config = function()
+      require("octo").setup()
+    end,
+  },
 }
